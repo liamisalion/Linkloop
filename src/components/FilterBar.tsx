@@ -13,10 +13,10 @@ export function FilterBar({ filters, active, onChange }: FilterBarProps) {
         <button
           key={f}
           onClick={() => onChange(f)}
-          className={`px-3.5 py-1.5 rounded-full text-sm font-semibold border transition-all ${
+          className={`px-3.5 py-1.5 rounded-full text-[13px] font-semibold transition-all ${
             active === f
-              ? "bg-[var(--blue)] text-white border-[var(--blue)]"
-              : "bg-white text-gray-500 border-gray-200 hover:border-[var(--blue)] hover:text-[var(--blue)]"
+              ? "bg-[var(--blue)] text-white shadow-sm"
+              : "bg-white text-[var(--text-secondary)] border border-[var(--border)] hover:border-[var(--blue)] hover:text-[var(--blue)] hover:bg-[var(--blue-pale)]"
           }`}
         >
           {f}

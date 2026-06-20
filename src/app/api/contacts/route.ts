@@ -26,6 +26,9 @@ export async function POST(req: NextRequest) {
       type: body.type || "其他",
       avatar: body.name?.[0] || "?",
       notes: body.notes || "",
+      email: body.email || "",
+      wechat: body.wechat || "",
+      linkedin: body.linkedin || "",
       interests: JSON.stringify(body.interests || []),
     },
   });

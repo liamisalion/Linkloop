@@ -25,20 +25,20 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-4 gap-4 mb-6">
-        <MetricCard value={metrics.newInfo} label="新增信息" trend="↑ 待处理" trendUp />
-        <MetricCard value={metrics.contacts} label="联系人" />
-        <MetricCard value={metrics.pendingActions} label="待跟进事项" trend={`${overdueCommitments.length} 项已逾期`} trendUp={false} />
-        <MetricCard value={metrics.events} label="社媒动态" />
+        <MetricCard value={metrics.newInfo} label="新增信息" trend="↑ 待处理" trendUp icon="📥" />
+        <MetricCard value={metrics.contacts} label="联系人" icon="👤" />
+        <MetricCard value={metrics.pendingActions} label="待跟进事项" trend={`${overdueCommitments.length} 项已逾期`} trendUp={false} icon="⚡" />
+        <MetricCard value={metrics.events} label="社媒动态" icon="🌐" />
       </div>
 
       <h2 className="text-lg font-bold mb-3">高优先级跟进</h2>
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
+      <div className="bg-white rounded-lg shadow-[var(--shadow-card)]">
         {actionContacts.length === 0 && (
           <div className="text-center py-12 text-gray-400">暂无待处理事项</div>
         )}
         {actionContacts.map((c: any) => (
           <Link key={c.id} href={`/contacts/${c.id}`}
-            className="flex gap-3.5 items-start p-4 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors">
+            className="flex gap-3.5 items-start p-4 border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--hover)] transition-colors">
             <div className="w-10 h-10 rounded-full bg-blue-100 text-[var(--blue)] flex items-center justify-center font-bold text-base shrink-0">
               {c.avatar || c.name[0]}
             </div>

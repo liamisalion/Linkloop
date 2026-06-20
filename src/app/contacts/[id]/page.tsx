@@ -10,6 +10,8 @@ export default function ContactDetailPage() {
   const router = useRouter();
   const [contact, setContact] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [editLinks, setEditLinks] = useState<Record<string, string>>({});
 
   useEffect(() => {
     fetch(`/api/contacts/${id}`).then(r => r.json()).then(d => { setContact(d); setLoading(false); });
@@ -19,6 +21,16 @@ export default function ContactDetailPage() {
   if (!contact) return <div className="text-center py-12 text-gray-400">联系人不存在</div>;
 
   const interests: string[] = (() => { try { return JSON.parse(contact.interests); } catch { return []; } })();
+
+  async function saveLinks() {
+    await fetch(`/api/contacts/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(editLinks),
+    });
+    setContact((prev: any) => ({ ...prev, ...editLinks }));
+    setEditing(false);
+  }
   const analysis = contact.analyses?.[0] ? (() => { try { return JSON.parse(contact.analyses[0].result); } catch { return null; } })() : null;
 
   return (
@@ -39,6 +51,11 @@ export default function ContactDetailPage() {
             <div className="flex gap-1.5 mt-2">
               <Tag color="blue">{contact.type}</Tag>
               <Tag color="green">{contact.stage}</Tag>
+              {contact.isLinkedUser ? (
+                <Tag color="blue">LB 用户</Tag>
+              ) : (
+                <Tag color="gray">手动</Tag>
+              )}
             </div>
           </div>
         </div>
@@ -112,6 +129,62 @@ export default function ContactDetailPage() {
             </div>
           </div>
         )}
+
+        {/* Linked accounts */}
+        <div className="p-6 border-t border-gray-200">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-bold">🔗 关联账号</h3>
+            {contact.isLinkedUser ? (
+              <span className="text-xs bg-blue-50 text-[var(--blue)] px-2.5 py-1 rounded-full font-bold">LB 用户 · 由对方授权</span>
+            ) : (
+              <span className="text-xs bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full font-bold">手动联系人</span>
+            )}
+          </div>
+          {contact.isLinkedUser ? (
+            <div className="text-sm text-gray-500 bg-blue-50 rounded-lg p-3">该联系人是 LinkBase 用户，信息由对方授权展示并自动同步。</div>
+          ) : (
+            <div className="space-y-2.5">
+              {[
+                { key: "email", icon: "📧", label: "邮箱" },
+                { key: "phone", icon: "📱", label: "手机" },
+                { key: "wechat", icon: "💬", label: "微信" },
+                { key: "linkedin", icon: "💼", label: "LinkedIn" },
+                { key: "twitter", icon: "🐦", label: "X / Twitter" },
+                { key: "github", icon: "🐙", label: "GitHub" },
+              ].map(p => (
+                <div key={p.key} className="flex items-center gap-2 text-sm">
+                  <span className="w-6 text-center">{p.icon}</span>
+                  <span className="text-gray-500 w-16 shrink-0">{p.label}</span>
+                  {editing ? (
+                    <input
+                      value={editLinks[p.key] || ""}
+                      onChange={e => setEditLinks(prev => ({ ...prev, [p.key]: e.target.value }))}
+                      className="flex-1 px-2.5 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[var(--blue)]"
+                      placeholder={`输入${p.label}`}
+                    />
+                  ) : (
+                    <span className={contact[p.key] ? "text-gray-800" : "text-gray-300"}>
+                      {contact[p.key] || "未设置"}
+                    </span>
+                  )}
+                </div>
+              ))}
+              <div className="flex gap-2 mt-3">
+                {editing ? (
+                  <>
+                    <button onClick={saveLinks} className="px-4 py-1.5 bg-[var(--blue)] text-white rounded-lg text-sm font-semibold">保存</button>
+                    <button onClick={() => setEditing(false)} className="px-4 py-1.5 text-gray-500 text-sm">取消</button>
+                  </>
+                ) : (
+                  <button onClick={() => { setEditing(true); setEditLinks({ email: contact.email, phone: contact.phone, wechat: contact.wechat, linkedin: contact.linkedin, twitter: contact.twitter, github: contact.github }); }}
+                    className="px-4 py-1.5 border border-gray-200 text-gray-600 rounded-lg text-sm font-semibold hover:bg-gray-50">
+                    编辑关联账号
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Commitments */}
         {contact.commitments?.length > 0 && (

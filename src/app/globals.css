@@ -2,23 +2,80 @@
 
 :root {
   --blue: #0a66c2;
-  --blue-hover: #084c91;
+  --blue-hover: #004182;
   --blue-light: #e8f4fd;
   --blue-pale: #eef6ff;
+  --bg: #f4f2ee;
+  --card: #ffffff;
+  --border: #e0dfdc;
+  --text: #191919;
+  --text-secondary: #666666;
+  --text-tertiary: #999999;
   --green: #057642;
-  --green-bg: #dcfae6;
-  --yellow: #b7791f;
-  --yellow-bg: #fef0c7;
-  --red: #b42318;
-  --red-bg: #fee4e2;
-  --purple: #6941c6;
-  --purple-bg: #f4f3ff;
+  --green-bg: #e2f7e7;
+  --yellow: #915907;
+  --yellow-bg: #fef4e1;
+  --red: #cc1016;
+  --red-bg: #fce8e6;
+  --purple: #7c3aed;
+  --purple-bg: #f1ecfe;
+  --hover: rgba(0,0,0,0.04);
+  --shadow-card: 0 0 0 1px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-hover: 0 0 0 1px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.1);
+  --radius: 8px;
+  --radius-lg: 12px;
+  --transition: 0.15s ease;
 }
+
+* { box-sizing: border-box; }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
-.dark {
-  color-scheme: dark;
+::selection {
+  background: var(--blue);
+  color: white;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c5c5c5; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #a0a0a0; }
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--blue) !important;
+  box-shadow: 0 0 0 2px rgba(10,102,194,0.15);
+}
+
+.card-linkedin {
+  background: var(--card);
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--transition);
+}
+.card-linkedin:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeUp {
+  animation: fadeUp 0.3s ease forwards;
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-countUp {
+  animation: countUp 0.4s ease forwards;
 }

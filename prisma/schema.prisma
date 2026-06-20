@@ -7,11 +7,15 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  name      String
-  email     String    @unique
-  createdAt DateTime  @default(now())
-  contacts  Contact[]
+  id               String            @id @default(cuid())
+  name             String
+  email            String            @unique
+  createdAt        DateTime          @default(now())
+  contacts         Contact[]
+  profile          UserProfile?
+  visibilityRules  VisibilityRule[]
+  linksFrom        LinkRelation[]    @relation("linksFrom")
+  linksTo          LinkRelation[]    @relation("linksTo")
 }
 
 model Contact {
@@ -31,6 +35,15 @@ model Contact {
   lastContactAt DateTime?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+  linkedUserId  String?
+  isLinkedUser  Boolean       @default(false)
+  email         String        @default("")
+  phone         String        @default("")
+  wechat        String        @default("")
+  linkedin      String        @default("")
+  twitter       String        @default("")
+  github        String        @default("")
+  customLinks   String        @default("[]")
   interactions  Interaction[]
   commitments   Commitment[]
   inboxItems    InboxItem[]
@@ -96,6 +109,52 @@ model AIAnalysis {
   type      String
   result    String
   createdAt DateTime @default(now())
+}
+
+model UserProfile {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id])
+  displayName  String   @default("")
+  bio          String   @default("")
+  avatar       String   @default("")
+  emails       String   @default("[]")
+  phones       String   @default("[]")
+  wechat       String   @default("")
+  linkedin     String   @default("")
+  twitter      String   @default("")
+  github       String   @default("")
+  maimai       String   @default("")
+  feishu       String   @default("")
+  dingtalk     String   @default("")
+  website      String   @default("")
+  company      String   @default("")
+  title        String   @default("")
+  customFields String   @default("[]")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model VisibilityRule {
+  id        String @id @default(cuid())
+  userId    String
+  user      User   @relation(fields: [userId], references: [id])
+  field     String
+  level     String @default("linked")
+  allowTags String @default("[]")
+  denyTags  String @default("[]")
+}
+
+model LinkRelation {
+  id         String   @id @default(cuid())
+  fromUserId String
+  fromUser   User     @relation("linksFrom", fields: [fromUserId], references: [id])
+  toUserId   String
+  toUser     User     @relation("linksTo", fields: [toUserId], references: [id])
+  tags       String   @default("[]")
+  note       String   @default("")
+  createdAt  DateTime @default(now())
+  @@unique([fromUserId, toUserId])
 }
 
 model DataSource {

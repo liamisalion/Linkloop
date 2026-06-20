@@ -4,18 +4,35 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const navItems = [
-  { icon: "📊", label: "今日行动中心", href: "/" },
-  { icon: "📥", label: "信息收件箱", href: "/inbox" },
-  { icon: "👤", label: "联系人管理", href: "/contacts" },
-  { icon: "⏳", label: "谁在等我 / 我在等谁", href: "/waiting" },
-  { icon: "📋", label: "承诺清单", href: "/commitments" },
-  { icon: "🌐", label: "关注账号动态", href: "/social" },
-  { icon: "📈", label: "周报", href: "/weekly" },
-  { icon: "🤖", label: "AI 分析", href: "/ai" },
-  { icon: "📤", label: "数据导入", href: "/import" },
-  { icon: "🔌", label: "数据源连接", href: "/connections" },
-  { icon: "⚙️", label: "AI 设置", href: "/settings" },
+const navGroups = [
+  {
+    label: "",
+    items: [
+      { icon: "📊", label: "今日行动中心", href: "/" },
+      { icon: "📥", label: "收件箱", href: "/inbox" },
+      { icon: "👤", label: "联系人", href: "/contacts" },
+      { icon: "🪪", label: "我的名片", href: "/profile" },
+    ],
+  },
+  {
+    label: "跟进管理",
+    items: [
+      { icon: "⏳", label: "谁在等我", href: "/waiting" },
+      { icon: "📋", label: "承诺清单", href: "/commitments" },
+      { icon: "🌐", label: "社媒动态", href: "/social" },
+      { icon: "📈", label: "周报", href: "/weekly" },
+    ],
+  },
+  {
+    label: "工具",
+    items: [
+      { icon: "🤖", label: "AI 分析", href: "/ai" },
+      { icon: "📤", label: "数据导入", href: "/import" },
+      { icon: "🔌", label: "数据源", href: "/connections" },
+      { icon: "🔗", label: "Link 用户", href: "/link" },
+      { icon: "⚙️", label: "设置", href: "/settings" },
+    ],
+  },
 ];
 
 interface AIStatus {
@@ -34,71 +51,70 @@ export function Sidebar() {
     fetch("/api/ai/status")
       .then((r) => r.json())
       .then(setAiStatus)
-      .catch(() => setAiStatus({ configured: false, model: null, provider: null, status: "未知", message: "无法获取状态" }));
+      .catch(() => setAiStatus({ configured: false, model: null, provider: null, status: "未知", message: "" }));
   }, []);
 
   const statusColor = aiStatus?.status === "已连接"
-    ? "bg-green-400"
+    ? "bg-green-500"
     : aiStatus?.status === "已配置"
-      ? "bg-yellow-400"
+      ? "bg-yellow-500"
       : aiStatus?.status === "Key 无效"
-        ? "bg-red-400"
-        : "bg-gray-500";
+        ? "bg-red-500"
+        : "bg-gray-400";
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-60 bg-[#101828] text-white flex flex-col">
-      <div className="px-5 py-6 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-lg bg-[var(--blue)] flex items-center justify-center text-sm font-bold">
-          LB
-        </div>
-        <span className="text-lg font-semibold tracking-tight">LinkBase 常联系</span>
-      </div>
+    <aside className="fixed left-0 top-14 bottom-0 w-56 bg-white border-r border-[var(--border)] flex flex-col overflow-y-auto">
+      <nav className="flex-1 py-2">
+        {navGroups.map((group, gi) => (
+          <div key={gi}>
+            {group.label && (
+              <div className="px-4 pt-4 pb-1.5 text-[11px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">
+                {group.label}
+              </div>
+            )}
+            {group.items.map((item) => {
+              const isActive = item.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(item.href);
 
-      <nav className="flex-1 px-3 mt-2 space-y-1 overflow-y-auto">
-        {navItems.map((item) => {
-          const isActive = item.href === "/"
-            ? pathname === "/"
-            : pathname.startsWith(item.href);
-
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                isActive
-                  ? "bg-white/10 text-white font-medium"
-                  : "text-gray-300 hover:bg-white/5 hover:text-white"
-              }`}
-            >
-              <span className="text-base">{item.icon}</span>
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center gap-2.5 mx-2 px-3 py-2 rounded-md text-[13px] transition-all relative ${
+                    isActive
+                      ? "bg-[var(--blue-pale)] text-[var(--blue)] font-semibold"
+                      : "text-[var(--text-secondary)] hover:bg-[var(--hover)] hover:text-[var(--text)]"
+                  }`}
+                >
+                  {isActive && (
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-[var(--blue)] rounded-r-full" />
+                  )}
+                  <span className="text-sm">{item.icon}</span>
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+            {gi < navGroups.length - 1 && (
+              <div className="mx-4 my-2 border-t border-[var(--border)]" />
+            )}
+          </div>
+        ))}
       </nav>
 
       {aiStatus && (
-        <Link href="/settings" className="block mx-3 mb-3 px-3 py-2.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-          <div className="flex items-center gap-2 mb-1">
-            <span className={`w-2 h-2 rounded-full ${statusColor} shrink-0`} />
-            <span className="text-xs font-semibold text-gray-200">AI {aiStatus.status}</span>
+        <Link href="/settings" className="block mx-2 mb-2 px-3 py-2 rounded-md bg-[#f8f8f6] hover:bg-[var(--hover)] transition-colors">
+          <div className="flex items-center gap-2">
+            <span className={`w-1.5 h-1.5 rounded-full ${statusColor} shrink-0`} />
+            <span className="text-[11px] font-semibold text-[var(--text-secondary)]">AI {aiStatus.status}</span>
           </div>
           {aiStatus.model && (
-            <div className="text-[11px] text-gray-400 pl-4">
+            <div className="text-[10px] text-[var(--text-tertiary)] pl-3.5 mt-0.5">
               {aiStatus.provider} / {aiStatus.model}
-            </div>
-          )}
-          {!aiStatus.configured && (
-            <div className="text-[11px] text-gray-500 pl-4">
-              点击配置 AI →
             </div>
           )}
         </Link>
       )}
-
-      <div className="px-5 py-4 text-xs text-gray-500">
-        © 2026 LinkBase 常联系
-      </div>
     </aside>
   );
 }

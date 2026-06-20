@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
+import { Topbar } from "@/components/Topbar";
 
 export const metadata: Metadata = {
   title: "LinkBase 常联系",
@@ -10,11 +11,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh-CN">
-      <body className="bg-gray-50 text-gray-900 antialiased">
-        <div className="flex min-h-screen">
+      <body>
+        <Topbar />
+        <div className="flex pt-14">
           <Sidebar />
-          <main className="flex-1 ml-60">
-            <div className="p-6 max-w-7xl mx-auto">
+          <main className="flex-1 ml-56 min-h-[calc(100vh-56px)]">
+            <div className="p-5 max-w-6xl mx-auto">
               {children}
             </div>
           </main>
